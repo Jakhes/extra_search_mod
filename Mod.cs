@@ -6,9 +6,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-namespace example_modNS
+namespace extra_search_modNS
 {
-    public class example_mod : Mod
+    public class extra_search_mod : Mod
     {
         private void Awake()
         {
@@ -25,11 +25,11 @@ namespace example_modNS
     }
 
     [HarmonyPatch(typeof(GameScreen), "searchKnowledge")]
-    public class SearchHarmonyPatch
+    public class SearchKnowledgeHarmonyPatch
     {
         public static bool Prefix(ref bool __result, IKnowledge knowledge, string searchTerm) 
         {
-            if (ExampleModSearchMode.searchMode == SearchMode.SearchInIdeaDescription)
+            if (ExtraSearchMode.searchMode == SearchMode.SearchInIdeaDescription)
             {
                 if (knowledge.KnowledgeText.ToLower().Replace(" ", "").Contains(searchTerm.ToLower().Replace(" ", "")))
                 {
@@ -40,8 +40,9 @@ namespace example_modNS
                     __result = false;
                 }
             }
-            else if (ExampleModSearchMode.searchMode == SearchMode.SearchInIdeaName)
+            else if (ExtraSearchMode.searchMode == SearchMode.SearchInIdeaName)
             {
+                // original search method
                 if (knowledge.KnowledgeName.ToLower().Replace(" ", "").Contains(searchTerm.ToLower().Replace(" ", "")))
                 {
                     __result = true;
@@ -52,29 +53,27 @@ namespace example_modNS
                 }
             }
 
-            // return false to replace original Method
+            // return false to replace original method
             return false;
         }
     }
 
     [HarmonyPatch(typeof(WorldManager), "Update")]
-    public class SearchPatches
+    public class InputSearchHarmonyPatches
     {
-        
-
-        
         public static void Postfix()
         {
-            if (InputController.instance.GetKeyDown(Key.F) && ExampleModSearchMode.searchMode == SearchMode.SearchInIdeaName)
+            // Toggle the different searchmodes with F
+            if (InputController.instance.GetKeyDown(Key.F) && ExtraSearchMode.searchMode == SearchMode.SearchInIdeaName)
             {
-                ExampleModSearchMode.searchMode = SearchMode.SearchInIdeaDescription;
+                ExtraSearchMode.searchMode = SearchMode.SearchInIdeaDescription;
             }
-            else if (InputController.instance.GetKeyDown(Key.F) && ExampleModSearchMode.searchMode == SearchMode.SearchInIdeaDescription)
+            else if (InputController.instance.GetKeyDown(Key.F) && ExtraSearchMode.searchMode == SearchMode.SearchInIdeaDescription)
             {
-                ExampleModSearchMode.searchMode = SearchMode.SearchInIdeaName;
+                ExtraSearchMode.searchMode = SearchMode.SearchInIdeaName;
             }
 
-
+            // When pressing right mouse button, put the current Cards name into the idea search bar
             if (
                 WorldManager.instance.HoveredCard != null
                 && Mouse.current.rightButton.isPressed
@@ -83,10 +82,7 @@ namespace example_modNS
                 GameScreen.instance.IdeaSearchField.text = WorldManager.instance.HoveredCard.CardData.Name;
                 GameScreen.instance.UpdateIdeasLog();
             }
-            
         }
-
-        
     }
 
     public enum SearchMode
@@ -95,7 +91,7 @@ namespace example_modNS
         SearchInIdeaDescription
     }
 
-    public static class ExampleModSearchMode
+    public static class ExtraSearchMode
     {
         public static SearchMode searchMode = SearchMode.SearchInIdeaDescription;
     }
