@@ -9,6 +9,8 @@ Lets you right click on a Card and search for all Ideas that use the Card as com
 
 Because it searches through the description, there might be some Idea results that dont use the searched Card as component but use the name in the flavour text description.
 
+Should be compatible with the BetterMouseControls-Mod.
+
 ## Development
 
 - uses the Stackland [mod-template](https://github.com/stacklandsdev/mod-template) as basis
