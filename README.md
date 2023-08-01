@@ -19,5 +19,5 @@ Should be compatible with the BetterMouseControls-Mod.
 ## Links
 
 - Github: https: //github.com/Jakhes/extra_search_mod
-- Steam Workshop: 
+- Steam Workshop: https://steamcommunity.com/sharedfiles/filedetails/?id=3013114897
 - Stacklands Modding Wiki: https://modding.stacklands.co/en/latest/index.html
