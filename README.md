@@ -7,6 +7,8 @@ Lets you right click on a Card and search for all Ideas that use the Card as com
   - **Title Search**, goes through the Ideas and displays all that contain the searched Term in the Title. (original Search)
   - **Description Search** (activated by Default), displays all Ideas that contain the searched Term in the Idea description.
 
+Because it searches through the description, there might be some Cards that dont use the searched Card as component but uses the name in the flavour text description.
+
 ## Development
 
 - uses the Stackland [mod-template](https://github.com/stacklandsdev/mod-template) as basis
