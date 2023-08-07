@@ -21,3 +21,12 @@ Should be compatible with the BetterMouseControls-Mod.
 - Github: https: //github.com/Jakhes/extra_search_mod
 - Steam Workshop: https://steamcommunity.com/sharedfiles/filedetails/?id=3013114897
 - Stacklands Modding Wiki: https://modding.stacklands.co/en/latest/index.html
+
+## Changelog
+
+- v0.0.2
+  - Added a button to change the searchmode under the searchfield
+  - F no longer changes the seachmode
+  - Fix bug when searching with the searchfield and not the expected results are found
+  - should be clearer what searchmode is active
+- v0.0.1: Initial release
