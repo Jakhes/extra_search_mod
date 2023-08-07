@@ -1,13 +1,15 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
-
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace extra_search_modNS
 {
+
+
     public class extra_search_mod : Mod
     {
         private void Awake()
@@ -18,7 +20,7 @@ namespace extra_search_modNS
 
         public override void Ready()
         {
-            Logger.Log("Ready!");
+            
         }
 
         
@@ -63,15 +65,6 @@ namespace extra_search_modNS
     {
         public static void Postfix()
         {
-            // Toggle the different searchmodes with F
-            if (InputController.instance.GetKeyDown(Key.F) && ExtraSearchMode.searchMode == SearchMode.SearchInIdeaName)
-            {
-                ExtraSearchMode.searchMode = SearchMode.SearchInIdeaDescription;
-            }
-            else if (InputController.instance.GetKeyDown(Key.F) && ExtraSearchMode.searchMode == SearchMode.SearchInIdeaDescription)
-            {
-                ExtraSearchMode.searchMode = SearchMode.SearchInIdeaName;
-            }
 
             // When pressing right mouse button, put the current Cards name into the idea search bar
             if (
@@ -85,6 +78,56 @@ namespace extra_search_modNS
         }
     }
 
+    [HarmonyPatch(typeof(GameScreen), "Awake")]
+    public class SearchModeButtonHarmonyPatches
+    {
+        public static void Postfix()
+        {
+            GameObject searchModeBtnObj = GameObject.Instantiate(GameScreen.instance.IdeasButton.gameObject);
+            CustomButton searchModeBtn = searchModeBtnObj.GetComponent<CustomButton>();
+
+            // Put the button below the searchfield
+            searchModeBtnObj.transform.SetParent(GameScreen.instance.IdeaSearchField.transform.parent.parent);
+            searchModeBtnObj.transform.SetSiblingIndex(1);
+
+
+            searchModeBtn.Image.color = ColorManager.instance.DisabledColor;
+            searchModeBtn.TooltipText = "Changes the search mode to either title or description search.";
+
+            // Adding toggel functionality to the Clicked Event
+            searchModeBtn.Clicked += delegate
+            {
+                if (ExtraSearchMode.searchMode == SearchMode.SearchInIdeaName)
+                {
+                    searchModeBtn.TextMeshPro.text = "Description Search";
+                    ExtraSearchMode.searchMode = SearchMode.SearchInIdeaDescription;
+                }
+                else if (ExtraSearchMode.searchMode == SearchMode.SearchInIdeaDescription)
+                {
+                    searchModeBtn.TextMeshPro.text = "Title Search";
+                    ExtraSearchMode.searchMode = SearchMode.SearchInIdeaName;
+                }
+                GameScreen.instance.UpdateIdeasLog();
+            };
+
+            // save the button as a static ref
+            ExtraSearchMode.searchModeButton = searchModeBtn;
+        }
+    }
+
+    [HarmonyPatch(typeof(GameScreen), "Update")]
+    public class ChangeSearchModeButtonTextHarmonyPatches
+    {
+        public static void Postfix()
+        {
+            // Need to change the searchmode button text later than Awake or else the text doesnt change
+            if (ExtraSearchMode.searchModeButton.TextMeshPro.text == "Ideas")
+            {
+                ExtraSearchMode.searchModeButton.HardSetText("Description Search");
+            }
+        }
+    }
+
     public enum SearchMode
     {
         SearchInIdeaName,
@@ -94,5 +137,7 @@ namespace extra_search_modNS
     public static class ExtraSearchMode
     {
         public static SearchMode searchMode = SearchMode.SearchInIdeaDescription;
+        // need the button on a static level so i can use it in the ChangeSearchModeButtonTextHarmonyPatches class
+        public static CustomButton searchModeButton = new CustomButton();
     }
 }
