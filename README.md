@@ -24,6 +24,9 @@ Should be compatible with the BetterMouseControls-Mod.
 
 ## Changelog
 
+- v0.0.3
+  - Added a button to clear the searchfield
+  - Added when right clicking on an empty field the searchfield gets cleared
 - v0.0.2
   - Added a button to change the searchmode under the searchfield
   - F no longer changes the seachmode
