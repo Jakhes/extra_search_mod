@@ -18,16 +18,16 @@ namespace extra_search_modNS
 
         public override void Ready()
         {
-            
+
         }
 
-        
+
     }
 
-    [HarmonyPatch(typeof(GameScreen), "searchKnowledge")]
+    [HarmonyPatch(typeof(GameScreen), "KnowledgeMatchesSearch")]
     public class SearchKnowledgeHarmonyPatch
     {
-        public static bool Prefix(ref bool __result, IKnowledge knowledge, string searchTerm) 
+        public static bool Prefix(ref bool __result, IKnowledge knowledge, string searchTerm)
         {
             if (ExtraSearchMode.searchMode == SearchMode.SearchInIdeaDescription)
             {
@@ -67,9 +67,10 @@ namespace extra_search_modNS
             // When pressing right mouse button, put the current Cards name into the idea search bar
             if (
                 WorldManager.instance.HoveredCard != null
-                && Mouse.current.rightButton.isPressed
+                && InputController.instance.StartedGrabbing()
             )
             {
+
                 GameScreen.instance.IdeaSearchField.text = WorldManager.instance.HoveredCard.CardData.Name;
                 GameScreen.instance.UpdateIdeasLog();
             }
@@ -107,6 +108,7 @@ namespace extra_search_modNS
             searchModeBtnObj.AddComponent<LayoutElement>();
             searchModeBtnObj.GetComponent<LayoutElement>().minWidth = 190;
             searchModeBtnObj.GetComponent<LayoutElement>().preferredWidth = 190;
+            searchModeBtnObj.GetComponent<LayoutElement>().preferredHeight = 50;
             CustomButton searchModeBtn = searchModeBtnObj.GetComponent<CustomButton>();
 
             // Put the button below the searchfield
@@ -141,6 +143,7 @@ namespace extra_search_modNS
             clearBtnObj.AddComponent<LayoutElement>();
             clearBtnObj.GetComponent<LayoutElement>().minWidth = 120;
             clearBtnObj.GetComponent<LayoutElement>().preferredWidth = 120;
+            clearBtnObj.GetComponent<LayoutElement>().preferredHeight = 50;
             CustomButton clearBtn = clearBtnObj.GetComponent<CustomButton>();
 
             // Put the button below the searchfield
@@ -148,6 +151,7 @@ namespace extra_search_modNS
             //clearBtnObj.transform.SetSiblingIndex(1);
 
 
+            clearBtn.TextMeshPro.text = "Clear";
             clearBtn.Image.color = ColorManager.instance.DisabledColor;
             clearBtn.TooltipText = "Removes the current search Term.";
 
@@ -169,13 +173,11 @@ namespace extra_search_modNS
         public static void Postfix()
         {
             // Need to change the searchmode button text later than Awake or else the text doesnt change
-            if (ExtraSearchMode.searchModeButton.TextMeshPro.text == "Ideas")
+            if (!ExtraSearchMode.button_Names_Set)
             {
                 ExtraSearchMode.searchModeButton.HardSetText("Description");
-            }
-            if (ExtraSearchMode.clearButton.TextMeshPro.text == "Ideas")
-            {
                 ExtraSearchMode.clearButton.HardSetText("Clear");
+                ExtraSearchMode.button_Names_Set = true;
             }
         }
     }
@@ -188,9 +190,11 @@ namespace extra_search_modNS
 
     public static class ExtraSearchMode
     {
+        public static bool button_Names_Set = false;
         public static SearchMode searchMode = SearchMode.SearchInIdeaDescription;
         // need the button on a static level so i can use it in the ChangeSearchModeButtonTextHarmonyPatches class
         public static CustomButton searchModeButton = new CustomButton();
         public static CustomButton clearButton = new CustomButton();
     }
+
 }
